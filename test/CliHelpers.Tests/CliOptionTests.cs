@@ -1,15 +1,19 @@
-﻿using System;
+﻿using Microsoft.Extensions.CommandLineUtils;
 using Xunit;
 
 namespace CliHelpers.Tests
 {
-    
+
     public class CliOptionTests
     {
         [Fact]
         public void OptionIsFine()
         {
-            Assert.Equal(2, 1+1);
+            var app = new CommandLineApplication();
+            var option = app.AddCliOption("-d | --debug <debugger>", "My description");
+
+            Assert.Equal(app, option.Command);
+            Assert.Equal(option.OptionName, "debugger");
         }
     }
 }
