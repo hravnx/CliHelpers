@@ -15,6 +15,15 @@ namespace CliHelpers.Tests
             Assert.Equal(app, option.Command);
             Assert.Equal(option.OptionName, "debugger");
         }
+        [Fact]
+        public void CliOption_throws_when()
+        {
+            var app = new CommandLineApplication();
+            var option = app.AddCliOption("-d | --debug <debugger>", "My description");
+
+            Assert.Equal(app, option.Command);
+            Assert.Equal(option.OptionName, "debugger");
+        }
     }
     public class CliFlagTests
     {
