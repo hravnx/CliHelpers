@@ -20,6 +20,20 @@ namespace CliHelpers
         string OptionName { get; }
     }
 
+    /// <summary>
+    /// Specifies the oparations available on a CLI option that has a value
+    /// </summary>
+    /// <typeparam name="T">The type of the value</typeparam>
+    public interface ICliOptionWithValue<out T> : ICliOption
+    {
+        /// <summary>
+        /// Gets the value of the option
+        /// </summary>
+        /// <returns>The value</returns>
+        /// <exception cref="CommandParsingException">If there is a validation error while parsing the option on the command line</exception>
+        T Value();
+    }
+
 
     public sealed class CliOption : ICliOption
     {
