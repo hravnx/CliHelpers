@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using Microsoft.Extensions.CommandLineUtils;
 using Xunit;
 
 namespace CliHelpers.Tests
 {
+
+
     public class CliOptionTests
     {
         CommandLineApplication _app = new CommandLineApplication();
@@ -157,6 +160,199 @@ namespace CliHelpers.Tests
 
             Assert.Equal("abcdef", option.Value());
         }
+
+        [Fact]
+        public void CliOption_can_be_validated()
+        {
+            var option = _app
+                .AddCliOption("-a <value>", null)
+                .WithDefaultValue("abc")
+                .ValidatedWith(_ => false, "");
+            Assert.Throws<CommandParsingException>(() => option.Value());
+        }
+
+        [Fact]
+        public void IsNotNegative_works_for_sbytes()
+        {
+            var option = _app
+                .AddCliOption("-a <value>", null)
+                .IsRequired<sbyte>()
+                .IsNotNegative();
+
+            var option2 = _app
+                .AddCliOption("-b <value>", null)
+                .IsRequired<sbyte>()
+                .IsNotNegative();
+
+            _app.OnExecute(() =>
+            {
+                Assert.Throws<CommandParsingException>(() => option.Value());
+                Assert.Equal(21, option2.Value());
+                return 0;
+            });
+
+            _app.Execute("-a", "-21", "-b", "21");
+
+        }
+
+        [Fact]
+        public void IsNotNegative_works_for_shorts()
+        {
+            var option = _app
+                .AddCliOption("-a <value>", null)
+                .IsRequired<short>()
+                .IsNotNegative();
+
+            var option2 = _app
+                .AddCliOption("-b <value>", null)
+                .IsRequired<short>()
+                .IsNotNegative();
+
+            _app.OnExecute(() =>
+            {
+                Assert.Throws<CommandParsingException>(() => option.Value());
+                Assert.Equal(2121, option2.Value());
+                return 0;
+            });
+
+            _app.Execute("-a", "-2121", "-b", "2121");
+
+        }
+
+        [Fact]
+        public void IsNotNegative_works_for_ints()
+        {
+            var option = _app
+                .AddCliOption("-a <value>", null)
+                .IsRequired<int>()
+                .IsNotNegative();
+
+            var option2 = _app
+                .AddCliOption("-b <value>", null)
+                .IsRequired<int>()
+                .IsNotNegative();
+
+            _app.OnExecute(() =>
+            {
+                Assert.Throws<CommandParsingException>(() => option.Value());
+                Assert.Equal(21210, option2.Value());
+                return 0;
+            });
+
+            _app.Execute("-a", "-21210", "-b", "21210");
+
+        }
+
+        [Fact]
+        public void IsNotNegative_works_for_longs()
+        {
+            var option = _app
+                .AddCliOption("-a <value>", null)
+                .IsRequired<long>()
+                .IsNotNegative();
+
+            var option2 = _app
+                .AddCliOption("-b <value>", null)
+                .IsRequired<long>()
+                .IsNotNegative();
+
+            _app.OnExecute(() =>
+            {
+                Assert.Throws<CommandParsingException>(() => option.Value());
+                Assert.Equal(21210L, option2.Value());
+                return 0;
+            });
+
+            _app.Execute("-a", "-21210", "-b", "21210");
+
+        }
+
+        [Fact]
+        public void IsNotNegative_works_for_floats()
+        {
+            var option = _app
+                .AddCliOption("-a <value>", null)
+                .IsRequired<float>()
+                .IsNotNegative();
+
+            var option2 = _app
+                .AddCliOption("-b <value>", null)
+                .IsRequired<float>()
+                .IsNotNegative();
+
+            _app.OnExecute(() =>
+            {
+                Assert.Throws<CommandParsingException>(() => option.Value());
+                Assert.Equal(212.10f, option2.Value());
+                return 0;
+            });
+
+            _app.Execute("-a", "-212.10", "-b", "212.10");
+
+        }
+
+        [Fact]
+        public void IsNotNegative_works_for_doubles()
+        {
+            var option = _app
+                .AddCliOption("-a <value>", null)
+                .IsRequired<double>()
+                .IsNotNegative();
+
+            var option2 = _app
+                .AddCliOption("-b <value>", null)
+                .IsRequired<double>()
+                .IsNotNegative();
+
+            _app.OnExecute(() =>
+            {
+                Assert.Throws<CommandParsingException>(() => option.Value());
+                Assert.Equal(212.10, option2.Value());
+                return 0;
+            });
+
+            _app.Execute("-a", "-212.10", "-b", "212.10");
+
+        }
+
+        [Fact]
+        public void CliOption_can_be_transformed_to_abs_path()
+        {
+            var option = _app
+                .AddCliOption("-a <value>", null)
+                .WithDefaultValue("abc.txt")
+                .AsAbsolutePath();
+
+            var option2 = _app
+                .AddCliOption("-b <value2>", null)
+                .WithDefaultValue(Path.Combine(Directory.GetCurrentDirectory(), "abc.txt"))
+                .AsAbsolutePath();
+
+            Assert.True(Path.IsPathRooted(option.Value()));
+            Assert.True(Path.IsPathRooted(option2.Value()));
+        }
+
+        [Fact]
+        public void CliOption_can_validate_that_it_is_an_existing_file()
+        {
+            using (var tmp = new TempFileMaker())
+            {
+                var option = _app
+                    .AddCliOption("-a <value>", null)
+                    .WithDefaultValue(tmp.TempFilePath)
+                    .FileMustExist();
+
+                var option2 = _app
+                    .AddCliOption("-b <value2>", null)
+                    .WithDefaultValue(tmp.TempFilePath + ".1")
+                    .FileMustExist();
+
+                Assert.Equal(tmp.TempFilePath, option.Value());
+                Assert.Throws<CommandParsingException>(() => option2.Value());
+            }
+
+        }
+
 
     }
 
