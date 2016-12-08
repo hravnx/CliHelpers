@@ -26,11 +26,10 @@ namespace CliHelpers
 
     public static class CliValueExtensions
     {
-        //public static IOptionWithValue<U> TransformWith<T, U>(this IOptionWithValue<T> option, Func<T, U> transformer)
-        //{
-        //    return new CliTransformingOption<T, U>(option, transformer);
-        //}
-
+        public static ICliOptionWithValue<U> TransformWith<T, U>(this ICliOptionWithValue<T> option, Func<T, U> transformer)
+        {
+            return new CliTransformingOption<T, U>(option, transformer);
+        }
 
         public static ICliOptionWithValue<T> IsRequired<T>(this CliOption option)
         {
@@ -43,8 +42,6 @@ namespace CliHelpers
             var converter = CliTypeConverters.GetConverter(typeof(T));
             return new CliOptionWithDefaultValue<T>(option, defaultValue, s => (T)converter(s));
         }
-
-//        public static IOptionWithValue<string> AsAbsolutePath(this IOptionWithValue<string> option) => option.TransformWith(s => s + "hmm");
 
     }
 }

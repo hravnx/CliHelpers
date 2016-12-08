@@ -132,6 +132,7 @@ namespace CliHelpers.Tests
             TestRequiredValue<double>("0.12333", 0.12333);
             TestRequiredValue<char>("b", 'b');
             TestRequiredValue<bool>("true", true);
+            TestRequiredValue<decimal>("123.5667", 123.5667m);
             TestRequiredValue<DateTime>("2016-10-21 10:32:01", new DateTime(2016,10,21,10,32,1,DateTimeKind.Utc));
             TestRequiredValue<string>("hello", "hello");
         }
@@ -146,6 +147,16 @@ namespace CliHelpers.Tests
             Assert.Throws<CommandParsingException>(() => TestExecute(_app, () => { }, "-a"));
         }
 
+        [Fact]
+        public void CliOption_can_be_transformed()
+        {
+            var option = _app
+                .AddCliOption("-a <value>", null)
+                .WithDefaultValue("abc")
+                .TransformWith(v => v + "def");
+
+            Assert.Equal("abcdef", option.Value());
+        }
 
     }
 
