@@ -1,3 +1,5 @@
+#addin "Cake.Json"
+
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
 var buildVersion = EnvironmentVariable("APPVEYOR_BUILD_VERSION");
@@ -5,7 +7,6 @@ var buildVersion = EnvironmentVariable("APPVEYOR_BUILD_VERSION");
 var outputDir = "./artifacts/";
 var solutionPath = "./CliHelpers.sln";
 var projectJson = "./src/CliHelpers/project.json";
-
 
 var releaseMsBuildSettings = new MSBuildSettings
 		{
@@ -49,6 +50,7 @@ Task("Test")
 Task("Build")
     .IsDependentOn("Clean")
     .IsDependentOn("Restore")
+    .IsDependentOn("Version")
     .Does(() =>
     {
         MSBuild(solutionPath, activeMsBuildConfig);
@@ -59,14 +61,16 @@ Task("Version")
         // if we're building locally do nothing
         if (string.IsNullOrEmpty(buildVersion))
         {
+            Warning("No version to patch to, skipping...");
             return;
         }
 
-        Information("patching to {0}", buildVersion);
-        // Update project.json
-        var updatedProjectJson = System.IO.File.ReadAllText(projectJson);
-        updatedProjectJson = versionRx.Replace(updatedProjectJson, "buildVersion" + "\"");
-        System.IO.File.WriteAllText(projectJson, updatedProjectJson);
+        var jObject = ParseJsonFromFile(projectJson);
+        var oldVersion = jObject["version"];
+        Information("Patching {0} -> {1}", oldVersion, buildVersion);
+        jObject["version"] = buildVersion;
+
+        System.IO.File.WriteAllText(projectJson,jObject.ToString());
     });
 
 Task("Restore")
