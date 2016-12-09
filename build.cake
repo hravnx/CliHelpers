@@ -2,7 +2,8 @@
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
-
+var nuget_push_key = EnvironmentVariable("NUGET_API_KEY");
+var packageVersion = EnvironmentVariable("APPVEYOR_BUILD_VERSION");
 
 var outputDir = "./artifacts/";
 var solutionPath = "./CliHelpers.sln";
@@ -23,6 +24,27 @@ var debugMsBuildSettings = new MSBuildSettings
 
 var activeMsBuildConfig = configuration == "Debug" ? debugMsBuildSettings : releaseMsBuildSettings;
 
+
+Task("Publish")
+    //.IsDependentOn("Package")
+    .Does(() => {
+
+        if (string.IsNullOrEmpty(nuget_push_key))
+        {
+            throw new InvalidOperationException("NUGET_API_KEY not found");
+        }
+
+        Information("API KEY {0}", nuget_push_key);
+        Information("Build version {0}", packageVersion);
+
+        // using(var process = StartAndReturnProcess("./tools/nuget.exe", new ProcessSettings{ Arguments = string.Format("./artifacts/CliHelpers.{0}.nupkg", packageVersion) }))
+        // {
+        //     process.WaitForExit();
+
+        //     // This should output 0 as valid arguments supplied
+        //     Information("Exit code: {0}", process.GetExitCode());
+        // }
+    });
 
 Task("Package")
     .IsDependentOn("Test")
