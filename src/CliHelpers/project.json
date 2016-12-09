@@ -1,6 +1,6 @@
-﻿{
+{
   "name": "CliHelpers",
-  "version": "1.0.0-*",
+  "buildVersion": "1.0.0-*",
   "authors": [
     "Henrik Ravn"
   ],

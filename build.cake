@@ -1,12 +1,11 @@
-#tool "nuget:?package=GitVersion.CommandLine"
-
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
-var nuget_push_key = EnvironmentVariable("NUGET_API_KEY");
-var packageVersion = EnvironmentVariable("APPVEYOR_BUILD_VERSION");
+var buildVersion = EnvironmentVariable("APPVEYOR_BUILD_VERSION");
 
 var outputDir = "./artifacts/";
 var solutionPath = "./CliHelpers.sln";
+var projectJson = "./src/CliHelpers/project.json";
+
 
 var releaseMsBuildSettings = new MSBuildSettings
 		{
@@ -24,30 +23,15 @@ var debugMsBuildSettings = new MSBuildSettings
 
 var activeMsBuildConfig = configuration == "Debug" ? debugMsBuildSettings : releaseMsBuildSettings;
 
-
-Task("Publish")
-    .IsDependentOn("Package")
-    .Does(() => {
-
-        if (string.IsNullOrEmpty(nuget_push_key))
-        {
-            throw new InvalidOperationException("NUGET_API_KEY not found");
-        }
-
-        using(var process = StartAndReturnProcess("./tools/nuget.exe", new ProcessSettings{ Arguments = string.Format("./artifacts/CliHelpers.{0}.nupkg -ApiKey {1}", packageVersion, nuget_push_key) }))
-        {
-            process.WaitForExit();
-
-            // This should output 0 as valid arguments supplied
-            Information("Exit code: {0}", process.GetExitCode());
-        }
-    });
+var versionRx = new System.Text.RegularExpressions.Regex(@"version\""\:\s*(\""[0-9\.\-\*]*\"")");
 
 Task("Package")
     .IsDependentOn("Test")
     .Does(() => {
         EnsureDirectoryExists(outputDir);
-        var packSettings = new DotNetCorePackSettings {
+
+        var packSettings = new DotNetCorePackSettings
+        {
             Configuration = configuration,
             OutputDirectory = outputDir,
             NoBuild = true
@@ -57,15 +41,32 @@ Task("Package")
 
 Task("Test")
 	.IsDependentOn("Build")
-	.Does(() => {
+	.Does(() =>
+    {
 		DotNetCoreTest("./test/CliHelpers.Tests");
 	});
 
 Task("Build")
     .IsDependentOn("Clean")
     .IsDependentOn("Restore")
-    .Does(() => {
+    .Does(() =>
+    {
         MSBuild(solutionPath, activeMsBuildConfig);
+    });
+
+Task("Version")
+    .Does(() => {
+        // if we're building locally do nothing
+        if (string.IsNullOrEmpty(buildVersion))
+        {
+            return;
+        }
+
+        Information("patching to {0}", buildVersion);
+        // Update project.json
+        var updatedProjectJson = System.IO.File.ReadAllText(projectJson);
+        updatedProjectJson = versionRx.Replace(updatedProjectJson, "buildVersion" + "\"");
+        System.IO.File.WriteAllText(projectJson, updatedProjectJson);
     });
 
 Task("Restore")
@@ -85,8 +86,9 @@ Task("Clean")
     });
 
 
+
 Task("Default")
-    .IsDependentOn("Publish");
+    .IsDependentOn("Test");
 
 RunTarget(target);
 
