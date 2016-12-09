@@ -89,7 +89,7 @@ Task("Clean")
 
 
 Task("Default")
-    .IsDependentOn("Package");
+    .IsDependentOn("Publish");
 
 RunTarget(target);
 
