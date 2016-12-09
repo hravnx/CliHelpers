@@ -34,16 +34,13 @@ Task("Publish")
             throw new InvalidOperationException("NUGET_API_KEY not found");
         }
 
-        Information("API KEY {0}", nuget_push_key);
-        Information("Build version {0}", packageVersion);
+        using(var process = StartAndReturnProcess("./tools/nuget.exe", new ProcessSettings{ Arguments = string.Format("./artifacts/CliHelpers.{0}.nupkg -ApiKey {1}", packageVersion, nuget_push_key) }))
+        {
+            process.WaitForExit();
 
-        // using(var process = StartAndReturnProcess("./tools/nuget.exe", new ProcessSettings{ Arguments = string.Format("./artifacts/CliHelpers.{0}.nupkg", packageVersion) }))
-        // {
-        //     process.WaitForExit();
-
-        //     // This should output 0 as valid arguments supplied
-        //     Information("Exit code: {0}", process.GetExitCode());
-        // }
+            // This should output 0 as valid arguments supplied
+            Information("Exit code: {0}", process.GetExitCode());
+        }
     });
 
 Task("Package")
