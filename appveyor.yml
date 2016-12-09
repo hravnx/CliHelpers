@@ -1,6 +1,6 @@
 version: 1.0.{build}
 build_script:
-- ps: build.ps1
+- ps: ./build.ps1 -Target Package
 test: off
 deploy:
 - provider: NuGet
