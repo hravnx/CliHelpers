@@ -1,5 +1,20 @@
 ﻿{
+  "name": "CliHelpers",
   "version": "1.0.0-*",
+  "authors": [
+    "Henrik Ravn"
+  ],
+  "description": "A thin helper layer to make Microsoft.Extensions.CommandLineUtils easier to work with",
+  "packOptions": {
+    "projectUrl": "https://github.com/hravnx/CliHelpers",
+    "licenseUrl": "https://github.com/hravnx/CliHelpers/blob/master/LICENSE.txt",
+    "tags": [
+      "CLI",
+      "C#",
+      "Commandline"
+    ]
+  },
+  "copyright": "Copyright (c) 2016 Henrik Ravn",
   "dependencies": {
     "NETStandard.Library": "1.6.1",
     "Microsoft.Extensions.CommandLineUtils": "1.1.0"

@@ -1,2 +1,2 @@
 # CliHelpers
-This helper layer to make Microsoft.Extensions.CommandLineUtils easier to work with
+A thin helper layer to make Microsoft.Extensions.CommandLineUtils easier to work with
