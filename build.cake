@@ -67,7 +67,7 @@ Task("Clean")
 
 
 Task("Default")
-    .IsDependentOn("Test");
+    .IsDependentOn("Package");
 
 RunTarget(target);
 
