@@ -26,7 +26,7 @@ var activeMsBuildConfig = configuration == "Debug" ? debugMsBuildSettings : rele
 
 
 Task("Publish")
-    //.IsDependentOn("Package")
+    .IsDependentOn("Package")
     .Does(() => {
 
         if (string.IsNullOrEmpty(nuget_push_key))
