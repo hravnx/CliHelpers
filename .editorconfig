@@ -19,7 +19,7 @@ end_of_line = crlf
 # this VS-specific stuff is based on experiments to see how VS will modify a file after it has been manually edited.
 # the settings are meant to closely match what VS does to minimize unnecessary diffs. this duplicates some settings in *
 # but let's be explicit here to be safe (in case someone wants to copy-paste this out to another .editorconfig).
-[*.{vcxproj,vcxproj.filters,csproj,props,targets}]
+[*.{vcxproj,vcxproj.filters,csproj,fsproj,xproj,props,targets}]
 indent_style = space
 indent_size = 2
 end_of_line = crlf
