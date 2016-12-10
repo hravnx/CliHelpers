@@ -5,26 +5,7 @@ var configuration = Argument("configuration", "Release");
 var buildVersion = EnvironmentVariable("APPVEYOR_BUILD_VERSION");
 
 var outputDir = "./artifacts/";
-var solutionPath = "./CliHelpers.sln";
 var projectJson = "./src/CliHelpers/project.json";
-
-var releaseMsBuildSettings = new MSBuildSettings
-		{
-			Verbosity = Verbosity.Quiet,
-			ToolVersion = MSBuildToolVersion.VS2015,
-			Configuration = "Release"
-		};
-
-var debugMsBuildSettings = new MSBuildSettings
-		{
-			Verbosity = Verbosity.Normal,
-			ToolVersion = MSBuildToolVersion.VS2015,
-			Configuration = "Debug"
-		};
-
-var activeMsBuildConfig = configuration == "Debug" ? debugMsBuildSettings : releaseMsBuildSettings;
-
-var versionRx = new System.Text.RegularExpressions.Regex(@"version\""\:\s*(\""[0-9\.\-\*]*\"")");
 
 Task("Package")
     .IsDependentOn("Test")
@@ -53,7 +34,11 @@ Task("Build")
     .IsDependentOn("Version")
     .Does(() =>
     {
-        MSBuild(solutionPath, activeMsBuildConfig);
+        var settings = new DotNetCoreBuildSettings
+        {
+            Configuration = configuration
+        };
+        DotNetCoreBuild(projectJson, settings);
     });
 
 Task("Version")
