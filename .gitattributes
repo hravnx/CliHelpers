@@ -1,0 +1,30 @@
+* text=auto
+
+# Custom for Visual Studio
+*.cs     diff=csharp
+*.sln    merge=union
+*.xproj  merge=union
+*.csproj merge=union
+*.vbproj merge=union
+*.fsproj merge=union
+*.dbproj merge=union
+
+# Normalise endings to CRLF
+*.sln             eol=crlf
+*.csproj          eol=crlf
+*.xproj           eol=crlf
+*.vbproj          eol=crlf
+*.fsproj          eol=crlf
+*.dbproj          eol=crlf
+
+# Standard to msysgit
+*.doc  diff=astextplain
+*.DOC  diff=astextplain
+*.docx diff=astextplain
+*.DOCX diff=astextplain
+*.dot  diff=astextplain
+*.DOT  diff=astextplain
+*.pdf  diff=astextplain
+*.PDF  diff=astextplain
+*.rtf  diff=astextplain
+*.RTF  diff=astextplain
