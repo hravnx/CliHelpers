@@ -1,4 +1,5 @@
-version: 1.1.1.{build}
+version: 1.1.2.{build}
+skip_non_tags: true
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
@@ -16,5 +17,4 @@ deploy:
   api_key:
     secure: e1D6p5+bkcxTSQ8tyfrQMyLJbZEHRIV6Obt2q1Qm+28+/LtSzSwSFUpgdATHK91A
   on:
-    branch: master
     APPVEYOR_REPO_TAG: true
